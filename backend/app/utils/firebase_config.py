@@ -29,8 +29,14 @@ def initialize_firebase():
         
         if firebase_config_json:
             # Use JSON configuration
-            firebase_config = json.loads(firebase_config_json)
-            cred = credentials.Certificate(firebase_config)
+            try:
+                firebase_config = json.loads(firebase_config_json)
+                cred = credentials.Certificate(firebase_config)
+            except json.JSONDecodeError as e:
+                print(f"Error parsing FIREBASE_CONFIG_JSON: {str(e)}")
+                print("Please check your Firebase configuration JSON format")
+                print("Database features will be disabled")
+                return
         else:
             # Use individual environment variables
             project_id = os.getenv("FIREBASE_PROJECT_ID")
@@ -40,7 +46,19 @@ def initialize_firebase():
             client_id = os.getenv("FIREBASE_CLIENT_ID")
             
             if not all([project_id, private_key_id, private_key, client_email, client_id]):
-                print("Warning: Firebase configuration not found. Database features will be disabled.")
+                print("⚠️  Firebase configuration not found!")
+                print("To enable database features, please:")
+                print("1. Create a .env file in the backend directory")
+                print("2. Add your Firebase configuration (see env.example)")
+                print("3. Or set individual environment variables:")
+                print("   - FIREBASE_PROJECT_ID")
+                print("   - FIREBASE_PRIVATE_KEY_ID") 
+                print("   - FIREBASE_PRIVATE_KEY")
+                print("   - FIREBASE_CLIENT_EMAIL")
+                print("   - FIREBASE_CLIENT_ID")
+                print("   - FIREBASE_CLIENT_X509_CERT_URL")
+                print("")
+                print("Database features will be disabled. The app will run in development mode.")
                 return
             
             firebase_config = {
@@ -65,10 +83,10 @@ def initialize_firebase():
         # Get Firestore client
         db = firestore.client()
         
-        print("Firebase initialized successfully")
+        print("✅ Firebase initialized successfully")
         
     except Exception as e:
-        print(f"Error initializing Firebase: {str(e)}")
+        print(f"❌ Error initializing Firebase: {str(e)}")
         print("Database features will be disabled")
         db = None
 

@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
 
-from app.api import text_extraction, analysis
+from app.api import text_extraction, analysis, auth, user_data
 from app.utils.firebase_config import initialize_firebase
 
 # Load environment variables
@@ -30,6 +30,8 @@ app.add_middleware(
 )
 
 # Include API routes
+app.include_router(auth.router, prefix="/api/auth", tags=["authentication"])
+app.include_router(user_data.router, prefix="/api/user", tags=["user-data"])
 app.include_router(text_extraction.router, prefix="/api", tags=["text-extraction"])
 app.include_router(analysis.router, prefix="/api", tags=["analysis"])
 

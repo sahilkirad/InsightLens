@@ -1,64 +1,27 @@
 # InsightLens
 
-A Web-Based Text Extraction and Analysis Platform
-
-## Overview
-
-InsightLens is a full-stack web application that allows users to upload images, extract text using OCR, and perform AI-powered analyses on the extracted text. The application features a modern, responsive interface with drag-and-drop functionality and real-time analysis capabilities.
+A full-stack web application for extracting and analyzing text from images using OCR and AI.
 
 ## Features
 
-- **Image Upload**: Drag-and-drop or file picker for image uploads
-- **Text Extraction**: Automatic OCR using OCR.space API
-- **AI Analysis**: Multiple analysis tools including:
-  - Text summarization
-  - Sentiment analysis
-  - Question answering
-- **Responsive Design**: Works seamlessly on desktop and mobile devices
-- **Real-time Processing**: Live feedback with loading states
-- **Data Persistence**: Firebase Firestore integration for session storage
-- **Context-Only Responses**: AI only answers based on extracted text, not general knowledge
+- **Image Upload & OCR**: Upload images via drag-and-drop and extract text using advanced OCR technology
+- **Text Preview**: Instantly preview extracted text with copy functionality
+- **AI-Powered Analysis**: Summarize, analyze sentiment, or ask questions about extracted text using Cohere AI
+- **Custom Prompts**: Guide summarization and Q&A with your own prompts for tailored results
+- **Analysis Dashboard**: View all analysis results in a clean, organized dashboard
+- **User Authentication**: Secure user registration, login, and password management
+- **Forgot Password**: Secure password reset functionality via email
+- **User Data Management**: View and manage your extraction history and analysis results
+- **Modern UI**: Responsive, user-friendly interface built with React, Vite, and Tailwind CSS
+- **Secure & Private**: No images stored, only extracted text and analysis results saved securely
 
-## Technology Stack
+## New Features
 
-### Frontend
-- React.js with Vite
-- Tailwind CSS
-- Axios for API communication
-- React Hooks for state management
-
-### Backend
-- Python FastAPI
-- OCR.space API for text extraction
-- Cohere AI for text analysis
-- Firebase Firestore for data storage
-
-### Deployment
-- Frontend: Vercel
-- Backend: Render
-
-## Project Structure
-
-```
-InsightLens/
-├── frontend/                 # React application
-│   ├── src/
-│   │   ├── components/       # React components
-│   │   ├── services/         # API services
-│   │   ├── contexts/         # React contexts
-│   │   └── utils/           # Utility functions
-│   ├── public/
-│   └── package.json
-├── backend/                  # FastAPI application
-│   ├── app/
-│   │   ├── api/             # API routes
-│   │   ├── services/        # Business logic
-│   │   ├── models/          # Data models
-│   │   └── utils/           # Utility functions
-│   ├── requirements.txt
-│   └── .env.example
-└── README.md
-```
+### Forgot Password Functionality
+- **Password Reset Request**: Users can request a password reset by entering their email address
+- **Secure Email Links**: Reset links are sent via email with secure tokens that expire in 1 hour
+- **Password Reset**: Users can set a new password using the secure reset link
+- **Email Configuration**: Supports SMTP email configuration for password reset emails
 
 ## Setup Instructions
 

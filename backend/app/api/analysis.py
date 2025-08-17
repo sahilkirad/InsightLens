@@ -1,8 +1,10 @@
 from fastapi import APIRouter, HTTPException, Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.services.ai_analysis_service import AIAnalysisService
 from app.services.alternative_ai_service import AlternativeAIAnalysisService
 from app.services.firestore_service import FirestoreService
-from app.models.schemas import AnalysisRequest, AnalysisResponse, AnalysisType
+from app.services.auth_service import AuthService
+from app.models.schemas import AnalysisRequest, AnalysisResponse, AnalysisType, UserResponse
 import logging
 
 # Configure logging
@@ -10,6 +12,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 router = APIRouter()
+security = HTTPBearer()
+auth_service = AuthService()
 
 # Initialize services (will be initialized when needed)
 ai_service = None
@@ -28,7 +32,10 @@ def get_services():
     return ai_service, alternative_ai_service, firestore_service
 
 @router.post("/analyze", response_model=AnalysisResponse)
-async def analyze_text(request: AnalysisRequest):
+async def analyze_text(
+    request: AnalysisRequest,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
     """
     Analyze text using AI models
     
@@ -59,7 +66,16 @@ async def analyze_text(request: AnalysisRequest):
                 detail="Prompt is required for question analysis"
             )
         
-        logger.info(f"Analyzing text with type: {request.analysis_type}")
+        # Get current user
+        token = credentials.credentials
+        current_user = await auth_service.get_current_user(token)
+        if not current_user:
+            raise HTTPException(
+                status_code=401,
+                detail="Invalid authentication credentials"
+            )
+        
+        logger.info(f"Analyzing text with type: {request.analysis_type} for user: {current_user.email}")
         
         # Get services
         ai_service, alternative_ai_service, firestore_service = get_services()
@@ -103,6 +119,20 @@ async def analyze_text(request: AnalysisRequest):
         result = analysis_result['result']
         if 'confidence' in result:
             result['confidence'] = min(result['confidence'], 100.0)
+        
+        # Store analysis result in Firestore if document_id is provided
+        if request.document_id:
+            try:
+                await firestore_service.add_analysis_to_document(
+                    document_id=request.document_id,
+                    analysis_type=request.analysis_type,
+                    result=result,
+                    prompt=request.prompt
+                )
+                logger.info(f"Stored analysis result for document: {request.document_id}")
+            except Exception as e:
+                logger.error(f"Failed to store analysis result: {str(e)}")
+                # Continue without storing if Firestore fails
         
         return AnalysisResponse(
             analysis_type=request.analysis_type,

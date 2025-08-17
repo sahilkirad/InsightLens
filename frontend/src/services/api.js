@@ -9,6 +9,15 @@ const api = axios.create({
   },
 })
 
+// Add auth token to requests if available
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('authToken')
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
+  return config
+})
+
 // Request interceptor for logging
 api.interceptors.request.use(
   (config) => {
@@ -44,6 +53,107 @@ api.interceptors.response.use(
     return Promise.reject(error)
   }
 )
+
+// Authentication API
+export const authAPI = {
+  /**
+   * Register a new user
+   * @param {Object} userData - User registration data
+   * @param {string} userData.full_name - User's full name
+   * @param {string} userData.email - User's email
+   * @param {string} userData.password - User's password
+   * @returns {Promise<Object>} Registration response
+   */
+  register: async (userData) => {
+    const response = await api.post('/api/auth/register', userData)
+    return response.data
+  },
+
+  /**
+   * Login user
+   * @param {Object} credentials - Login credentials
+   * @param {string} credentials.email - User's email
+   * @param {string} credentials.password - User's password
+   * @returns {Promise<Object>} Login response with token
+   */
+  login: async (credentials) => {
+    const response = await api.post('/api/auth/login', credentials)
+    return response.data
+  },
+
+  /**
+   * Get current user information
+   * @returns {Promise<Object>} Current user data
+   */
+  getCurrentUser: async () => {
+    const response = await api.get('/api/auth/me')
+    return response.data
+  },
+
+  /**
+   * Refresh JWT token
+   * @returns {Promise<Object>} New token response
+   */
+  refreshToken: async () => {
+    const response = await api.post('/api/auth/refresh')
+    return response.data
+  },
+
+  /**
+   * Request password reset
+   * @param {string} email - User's email address
+   * @returns {Promise<Object>} Password reset request response
+   */
+  forgotPassword: async (email) => {
+    const response = await api.post('/api/auth/forgot-password', { email })
+    return response.data
+  },
+
+  /**
+   * Reset password using token
+   * @param {Object} resetData - Password reset data
+   * @param {string} resetData.email - User's email
+   * @param {string} resetData.reset_token - Reset token from email
+   * @param {string} resetData.new_password - New password
+   * @returns {Promise<Object>} Password reset response
+   */
+  resetPassword: async (resetData) => {
+    const response = await api.post('/api/auth/reset-password', resetData)
+    return response.data
+  },
+}
+
+// User data API
+export const userDataAPI = {
+  /**
+   * Get user's extraction documents
+   * @param {number} limit - Maximum number of documents to retrieve
+   * @returns {Promise<Array>} User's extraction documents
+   */
+  getExtractions: async (limit = 20) => {
+    const response = await api.get(`/api/user/extractions?limit=${limit}`)
+    return response.data
+  },
+
+  /**
+   * Get user statistics
+   * @returns {Promise<Object>} User statistics
+   */
+  getStats: async () => {
+    const response = await api.get('/api/user/stats')
+    return response.data
+  },
+
+  /**
+   * Delete an extraction document
+   * @param {string} documentId - Document ID to delete
+   * @returns {Promise<Object>} Deletion response
+   */
+  deleteExtraction: async (documentId) => {
+    const response = await api.delete(`/api/user/extractions/${documentId}`)
+    return response.data
+  },
+}
 
 // Text extraction API
 export const textExtractionAPI = {
