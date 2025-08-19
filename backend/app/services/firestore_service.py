@@ -47,7 +47,7 @@ class FirestoreService:
         try:
             doc_data = {
                 'user_id': user_id,
-                'created_at': datetime.utcnow(),
+                'created_at': datetime.utcnow().replace(tzinfo=None),
                 'image_url': image_url,
                 'extracted_text': extracted_text,
                 'analyses': []
@@ -85,7 +85,7 @@ class FirestoreService:
             analysis_record = {
                 'type': analysis_type.value,
                 'result': result,
-                'timestamp': datetime.utcnow(),
+                'timestamp': datetime.utcnow().replace(tzinfo=None),
                 'prompt': prompt
             }
             
@@ -284,7 +284,7 @@ class FirestoreService:
         try:
             doc_ref = self.db.collection(self.users_collection).document(user_id)
             doc_ref.update({
-                'last_login': datetime.utcnow()
+                'last_login': datetime.utcnow().replace(tzinfo=None)
             })
             return True
             
@@ -323,7 +323,7 @@ class FirestoreService:
                 print(f"📄 Found extraction: {doc.id} with user_id: {doc_data.get('user_id')}")
             
             # Sort in Python instead of Firestore to avoid index requirement
-            extractions.sort(key=lambda x: x.get('created_at', datetime.utcnow()), reverse=True)
+            extractions.sort(key=lambda x: x.get('created_at', datetime.utcnow().replace(tzinfo=None)), reverse=True)
             
             # Apply limit after sorting
             extractions = extractions[:limit]

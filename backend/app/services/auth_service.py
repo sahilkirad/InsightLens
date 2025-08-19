@@ -48,6 +48,8 @@ class AuthService:
         else:
             expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         
+        # Ensure timezone-naive datetime for JWT
+        expire = expire.replace(tzinfo=None)
         to_encode.update({"exp": expire})
         encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
         return encoded_jwt
@@ -80,7 +82,7 @@ class AuthService:
             'email': user_data.email,
             'full_name': user_data.full_name,
             'hashed_password': hashed_password,
-            'created_at': datetime.utcnow(),
+            'created_at': datetime.utcnow().replace(tzinfo=None),
             'is_active': True,
             'last_login': None
         }
@@ -226,6 +228,8 @@ class AuthService:
             # Generate reset token
             reset_token = self.generate_reset_token()
             reset_expires = datetime.utcnow() + timedelta(hours=1)
+            # Ensure timezone-naive datetime for consistent storage
+            reset_expires = reset_expires.replace(tzinfo=None)
             
             print(f"🔑 Generated reset token: {reset_token[:10]}...")
             print(f"⏰ Token expires at: {reset_expires}")
@@ -272,8 +276,14 @@ class AuthService:
                 return False
 
             # Check if token matches and is not expired
+            # Convert stored datetime to timezone-naive for comparison
+            stored_expires = stored_token['expires']
+            if hasattr(stored_expires, 'replace'):
+                # If it's a timezone-aware datetime, convert to UTC and make it naive
+                stored_expires = stored_expires.replace(tzinfo=None)
+            
             if (stored_token['token'] == reset_token and 
-                stored_token['expires'] > datetime.utcnow()):
+                stored_expires > datetime.utcnow()):
                 return True
 
             return False

@@ -127,7 +127,7 @@ async def get_user_stats(current_user: UserResponse = Depends(get_current_user))
         
         # Get recent activity (last 7 days)
         from datetime import datetime, timedelta
-        week_ago = datetime.utcnow() - timedelta(days=7)
+        week_ago = datetime.utcnow().replace(tzinfo=None) - timedelta(days=7)
         recent_extractions = []
         
         for doc in extractions:
@@ -140,6 +140,10 @@ async def get_user_stats(current_user: UserResponse = Depends(get_current_user))
                 else:
                     # Python datetime
                     doc_datetime = created_at
+                
+                # Ensure timezone-naive for comparison
+                if hasattr(doc_datetime, 'replace'):
+                    doc_datetime = doc_datetime.replace(tzinfo=None)
                 
                 if doc_datetime > week_ago:
                     recent_extractions.append(doc)
