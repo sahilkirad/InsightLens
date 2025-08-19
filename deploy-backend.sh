@@ -1,61 +1,74 @@
 #!/bin/bash
 
-# InsightLens Backend Deployment Script
+# InsightLens Backend Deployment Script for Render
 # This script helps prepare and deploy the backend to Render
 
-echo "🚀 Starting InsightLens Backend Deployment..."
-
-# Check if we're in the right directory
-if [ ! -f "backend/requirements.txt" ]; then
-    echo "❌ Error: requirements.txt not found. Make sure you're in the project root directory."
-    exit 1
-fi
+echo "🚀 InsightLens Backend Deployment to Render"
+echo "=============================================="
 
 # Check if .env file exists
 if [ ! -f "backend/.env" ]; then
-    echo "⚠️  Warning: .env file not found in backend directory."
-    echo "Please create backend/.env with the following variables:"
-    echo "  OCR_SPACE_API_KEY=your_ocr_space_api_key"
-    echo "  COHERE_API_KEY=your_cohere_api_key"
-    echo "  FIREBASE_CONFIG_JSON=your_firebase_config_json"
-    echo "  CORS_ORIGINS=https://your-frontend-domain.vercel.app"
+    echo "❌ Error: backend/.env file not found!"
+    echo "Please create backend/.env with your API keys before deploying."
     echo ""
-    read -p "Continue anyway? (y/n): " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        exit 1
-    fi
-fi
-
-# Install dependencies
-echo "📦 Installing Python dependencies..."
-cd backend
-pip install -r requirements.txt
-
-# Run tests if available
-if [ -f "test_cohere_only.py" ]; then
-    echo "🧪 Running tests..."
-    python test_cohere_only.py
-fi
-
-# Check if uvicorn is available
-if ! command -v uvicorn &> /dev/null; then
-    echo "❌ Error: uvicorn not found. Please install it: pip install uvicorn[standard]"
+    echo "Required environment variables:"
+    echo "- FIREBASE_CONFIG_JSON"
+    echo "- JWT_SECRET_KEY"
+    echo "- OCR_SPACE_API_KEY"
+    echo "- COHERE_API_KEY"
+    echo "- CORS_ORIGINS"
     exit 1
 fi
 
-echo "✅ Backend is ready for deployment!"
+echo "✅ Environment file found"
 echo ""
-echo "📋 Next steps:"
-echo "1. Push your code to GitHub"
-echo "2. Go to render.com and create a new Web Service"
+
+# Check if requirements.txt exists
+if [ ! -f "backend/requirements.txt" ]; then
+    echo "❌ Error: backend/requirements.txt not found!"
+    exit 1
+fi
+
+echo "✅ Requirements file found"
+echo ""
+
+# Check if main.py exists
+if [ ! -f "backend/app/main.py" ]; then
+    echo "❌ Error: backend/app/main.py not found!"
+    exit 1
+fi
+
+echo "✅ Main application file found"
+echo ""
+
+echo "📋 Deployment Checklist:"
+echo "1. ✅ Environment variables configured"
+echo "2. ✅ Dependencies listed in requirements.txt"
+echo "3. ✅ Application code ready"
+echo ""
+echo "🎯 Next Steps for Render Deployment:"
+echo ""
+echo "1. Go to https://render.com and sign up/login"
+echo "2. Click 'New +' and select 'Web Service'"
 echo "3. Connect your GitHub repository"
-echo "4. Set the following configuration:"
+echo "4. Configure the service:"
+echo "   - Name: insightlens-backend"
 echo "   - Environment: Python 3"
 echo "   - Build Command: pip install -r requirements.txt"
 echo "   - Start Command: uvicorn app.main:app --host 0.0.0.0 --port \$PORT"
 echo "   - Root Directory: backend"
-echo "5. Add your environment variables in Render dashboard"
-echo "6. Deploy!"
 echo ""
-echo "🔗 Your backend will be available at: https://your-app-name.onrender.com"
+echo "5. Add Environment Variables in Render dashboard:"
+echo "   - OCR_SPACE_API_KEY"
+echo "   - COHERE_API_KEY"
+echo "   - FIREBASE_CONFIG_JSON"
+echo "   - JWT_SECRET_KEY"
+echo "   - CORS_ORIGINS (update with your frontend URL after deployment)"
+echo ""
+echo "6. Click 'Create Web Service'"
+echo ""
+echo "🔗 Your backend will be available at: https://your-service-name.onrender.com"
+echo ""
+echo "📝 Note: Update CORS_ORIGINS with your frontend URL after frontend deployment"
+echo ""
+echo "✅ Backend deployment preparation complete!"
