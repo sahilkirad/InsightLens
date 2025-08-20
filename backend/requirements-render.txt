@@ -1,6 +1,13 @@
-# Render-compatible requirements.txt
-# IMPORTANT: Use build command: pip install --only-binary=all -r requirements-render.txt
-# This forces pip to use pre-built wheels and avoid Rust compilation
+# =============================================================================
+# RENDER DEPLOYMENT - IMPORTANT BUILD COMMAND
+# =============================================================================
+# 
+# You MUST use this build command in Render:
+# pip install --only-binary=all -r requirements-render.txt
+#
+# This forces pip to use pre-built wheels and avoid Rust compilation.
+# Do NOT use: pip install -r requirements-render.txt
+# =============================================================================
 
 fastapi==0.104.1
 uvicorn[standard]==0.24.0
