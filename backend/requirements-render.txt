@@ -1,13 +1,15 @@
 # Render-compatible requirements.txt
-# These versions are tested to work on Render without Rust compilation issues
+# IMPORTANT: Use build command: pip install --only-binary=all -r requirements-render.txt
+# This forces pip to use pre-built wheels and avoid Rust compilation
 
-fastapi==0.95.2
+fastapi==0.104.1
 uvicorn[standard]==0.24.0
 python-multipart==0.0.6
 python-dotenv==1.0.0
 requests==2.31.0
 firebase-admin==6.2.0
-pydantic==1.10.13
-python-jose==3.3.0
-passlib==1.7.4
+pydantic==2.5.0
+pydantic-extra-types[email]==2.1.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
 bcrypt==4.0.1

@@ -1,8 +1,8 @@
-from pydantic import BaseModel, validator
+from pydantic import BaseModel
+from pydantic_extra_types import EmailStr
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from enum import Enum
-import re
 
 class AnalysisType(str, Enum):
     """Enumeration of available analysis types"""
@@ -10,51 +10,27 @@ class AnalysisType(str, Enum):
     SENTIMENT = "sentiment"
     QUESTION = "question"
 
-# Email validation function
-def validate_email(email: str) -> str:
-    """Validate email format"""
-    email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-    if not re.match(email_pattern, email):
-        raise ValueError('Invalid email format')
-    return email
-
 # User Authentication Models
 class UserCreate(BaseModel):
     """Model for user registration"""
-    email: str
+    email: EmailStr
     password: str
     full_name: str
-    
-    @validator('email')
-    def validate_email(cls, v):
-        return validate_email(v)
 
 class UserLogin(BaseModel):
     """Model for user login"""
-    email: str
+    email: EmailStr
     password: str
-    
-    @validator('email')
-    def validate_email(cls, v):
-        return validate_email(v)
 
 class ForgotPasswordRequest(BaseModel):
     """Model for forgot password request"""
-    email: str
-    
-    @validator('email')
-    def validate_email(cls, v):
-        return validate_email(v)
+    email: EmailStr
 
 class ResetPasswordRequest(BaseModel):
     """Model for password reset"""
-    email: str
+    email: EmailStr
     reset_token: str
     new_password: str
-    
-    @validator('email')
-    def validate_email(cls, v):
-        return validate_email(v)
 
 class PasswordResetResponse(BaseModel):
     """Model for password reset response"""
@@ -64,7 +40,7 @@ class PasswordResetResponse(BaseModel):
 class UserResponse(BaseModel):
     """Model for user response (without password)"""
     id: str
-    email: str
+    email: EmailStr
     full_name: str
     created_at: datetime
     is_active: bool = True
