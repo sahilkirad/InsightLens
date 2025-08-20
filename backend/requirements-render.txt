@@ -1,13 +1,9 @@
 # =============================================================================
-# RENDER DEPLOYMENT - IMPORTANT BUILD COMMAND
+# RENDER DEPLOYMENT - SIMPLIFIED REQUIREMENTS
 # =============================================================================
 # 
-# You MUST use this build command in Render:
-# pip install --only-binary=all -r requirements-render.txt
-#
-# This forces pip to use pre-built wheels and avoid Rust compilation.
-# Works with Python 3.13.4 (default) - no need to change Python version!
-# Do NOT use: pip install -r requirements-render.txt
+# Build Command: pip install --only-binary=all -r requirements-render.txt
+# This forces pre-built wheels and avoids Rust compilation issues.
 # =============================================================================
 
 fastapi==0.104.1
@@ -17,7 +13,6 @@ python-dotenv==1.0.0
 requests==2.31.0
 firebase-admin==6.2.0
 pydantic==2.5.0
-pydantic-extra-types[email]==2.1.0
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 bcrypt==4.0.1

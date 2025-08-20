@@ -1,8 +1,8 @@
-from pydantic import BaseModel
-from pydantic_extra_types import EmailStr
+from pydantic import BaseModel, validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from enum import Enum
+import re
 
 class AnalysisType(str, Enum):
     """Enumeration of available analysis types"""
@@ -10,27 +10,50 @@ class AnalysisType(str, Enum):
     SENTIMENT = "sentiment"
     QUESTION = "question"
 
+# Email validation function
+def validate_email(email: str) -> str:
+    """Basic email validation"""
+    if not email or '@' not in email or '.' not in email:
+        raise ValueError('Invalid email format')
+    return email
+
 # User Authentication Models
 class UserCreate(BaseModel):
     """Model for user registration"""
-    email: EmailStr
+    email: str
     password: str
     full_name: str
+    
+    @validator('email')
+    def validate_email(cls, v):
+        return validate_email(v)
 
 class UserLogin(BaseModel):
     """Model for user login"""
-    email: EmailStr
+    email: str
     password: str
+    
+    @validator('email')
+    def validate_email(cls, v):
+        return validate_email(v)
 
 class ForgotPasswordRequest(BaseModel):
     """Model for forgot password request"""
-    email: EmailStr
+    email: str
+    
+    @validator('email')
+    def validate_email(cls, v):
+        return validate_email(v)
 
 class ResetPasswordRequest(BaseModel):
     """Model for password reset"""
-    email: EmailStr
+    email: str
     reset_token: str
     new_password: str
+    
+    @validator('email')
+    def validate_email(cls, v):
+        return validate_email(v)
 
 class PasswordResetResponse(BaseModel):
     """Model for password reset response"""
@@ -40,7 +63,7 @@ class PasswordResetResponse(BaseModel):
 class UserResponse(BaseModel):
     """Model for user response (without password)"""
     id: str
-    email: EmailStr
+    email: str
     full_name: str
     created_at: datetime
     is_active: bool = True

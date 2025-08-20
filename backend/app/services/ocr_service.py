@@ -51,7 +51,7 @@ class OCRService:
                 self.api_url,
                 data=payload,
                 files=files,
-                timeout=30
+                timeout=60  # Increased timeout to 60 seconds
             )
             
             # Check if request was successful
@@ -103,6 +103,12 @@ class OCRService:
                 'message': 'Text extracted and cleaned successfully'
             }
             
+        except requests.exceptions.Timeout as e:
+            return {
+                'success': False,
+                'text': '',
+                'message': f'OCR service timeout: The request took too long to complete. Please try again.'
+            }
         except requests.exceptions.RequestException as e:
             return {
                 'success': False,
