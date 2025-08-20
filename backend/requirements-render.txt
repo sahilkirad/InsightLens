@@ -6,6 +6,7 @@
 # pip install --only-binary=all -r requirements-render.txt
 #
 # This forces pip to use pre-built wheels and avoid Rust compilation.
+# Works with Python 3.13.4 (default) - no need to change Python version!
 # Do NOT use: pip install -r requirements-render.txt
 # =============================================================================
 
